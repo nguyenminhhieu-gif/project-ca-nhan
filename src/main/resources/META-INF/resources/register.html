@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Thành Viên - Coffee Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="images/logo.png">
+</head>
+
+<body>
+
+    <div class="auth-page">
+        <div class="auth-bg-overlay"></div>
+
+        <div class="auth-card wide">
+            <div class="auth-logo-wrap">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Coffee Shop Logo" class="auth-logo">
+                </a>
+                <h2>Đăng Ký Tài Khoản</h2>
+                <p class="auth-subtitle">Trở thành thành viên thân thiết để tận hưởng những ưu đãi đặc biệt</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); register();">
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label for="fullName">Họ và tên</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-id-card input-icon-lead"></i>
+                            <input type="text" id="fullName" placeholder="Nguyễn Văn A" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="phone">Số điện thoại</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-phone input-icon-lead"></i>
+                            <input type="tel" id="phone" placeholder="0901234567" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="address">Địa chỉ giao hàng</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-location-dot input-icon-lead"></i>
+                        <input type="text" id="address" placeholder="Số nhà, tên đường, phường/xã, quận/huyện" required>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label for="gender">Giới tính</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-venus-mars input-icon-lead"></i>
+                            <select id="gender">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="birthDate">Ngày sinh</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-calendar input-icon-lead"></i>
+                            <input type="date" id="birthDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="registerUsername">Tên đăng nhập</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-user input-icon-lead"></i>
+                        <input type="text" id="registerUsername" placeholder="Chọn tên đăng nhập" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label for="registerPassword">Mật khẩu</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock input-icon-lead"></i>
+                            <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePassword('registerPassword', 'regPwdIcon')" title="Ẩn/Hiện">
+                                <i class="fa-solid fa-eye" id="regPwdIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">Xác nhận mật khẩu</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-shield-check input-icon-lead"></i>
+                            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePassword('confirmPassword', 'confPwdIcon')" title="Ẩn/Hiện">
+                                <i class="fa-solid fa-eye" id="confPwdIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-button">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Đăng ký tài khoản
+                </button>
+            </form>
+
+            <p class="auth-footer-text">
+                Đã có tài khoản?
+                <a href="login.html">Đăng nhập ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ai-barista.js"></script>
+</body>
+
+</html>

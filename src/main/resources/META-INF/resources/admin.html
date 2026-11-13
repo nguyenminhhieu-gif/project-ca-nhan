@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản Lý Sản Phẩm & Dịch Vụ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="images/logo.png">
+</head>
+
+<body style="background: #0c0806;">
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="images/logo.png" alt="Logo" class="logo">
+                <div>
+                    <h3>Coffee Shop</h3>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Thống Kê</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="admin.html" class="active">
+                        <i class="fa-solid fa-mug-hot"></i>
+                        <span>Sản Phẩm & Dịch Vụ</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="index.html">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Xem Cửa Hàng</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="cart.html">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Giỏ Hàng</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; padding: 10px 14px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Đăng Xuất</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-content">
+            <div class="admin-header-row">
+                <div class="admin-title-area">
+                    <h1>Quản Lý Sản Phẩm & Dịch Vụ</h1>
+                    <p>Quản lý danh mục cà phê, bánh ngọt, dụng cụ pha chế và các dịch vụ co-working tiện ích.</p>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="resetSampleProducts()" style="background: rgba(217,119,6,0.15); color: var(--primary-light); border: 1px solid rgba(217,119,6,0.4);" title="Nạp lại bộ dữ liệu cà phê & dịch vụ chuẩn">
+                        <i class="fa-solid fa-rotate"></i>
+                        Khôi phục dữ liệu mẫu
+                    </button>
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        Thêm sản phẩm mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABLE WRAPPER -->
+            <div class="table-card">
+                <div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 1.1rem; color: #fff;">Danh sách sản phẩm & dịch vụ</h3>
+                    <div style="position: relative; width: 280px;">
+                        <input type="text" id="adminSearchInput" placeholder="Tìm theo tên hoặc ID..." oninput="searchAdminProducts()" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius-full); padding: 8px 14px 8px 36px; color: #fff; font-size: 0.88rem;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 11px; color: #6b7280; font-size: 0.85rem;"></i>
+                    </div>
+                </div>
+
+                <div id="adminProducts" style="overflow-x: auto;">
+                    <!-- Rendered by admin.js -->
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--primary); margin-bottom: 10px;"></i>
+                        <p>Đang tải danh sách...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- PRODUCT MODAL (ADD / EDIT) -->
+    <div class="modal hidden" id="productModal">
+        <div class="modal-content" style="max-width: 520px; text-align: left;">
+            <h2 id="modalTitle" style="margin-bottom: 20px;">Thêm Sản Phẩm</h2>
+
+            <input type="hidden" id="productId">
+
+            <div class="input-group">
+                <label for="productName">Tên sản phẩm / Dịch vụ</label>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-mug-hot input-icon-lead"></i>
+                    <input type="text" id="productName" placeholder="VD: Cà Phê Trứng Hoàng Kim, Combo Co-Working..." required>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="input-group">
+                    <label for="productCategory">Danh mục</label>
+                    <select id="productCategory" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius-md); padding: 11px 14px; color: #fff; font-size: 0.95rem;">
+                        <option value="coffee" style="background: #1c1917;">Cà Phê (Pha Phin & Ý)</option>
+                        <option value="bakery" style="background: #1c1917;">Bánh Ngọt & Ăn Kèm</option>
+                        <option value="services" style="background: #1c1917;">Dịch Vụ & Không Gian</option>
+                        <option value="beans" style="background: #1c1917;">Hạt Cà Phê & Dụng Cụ</option>
+                        <option value="tea" style="background: #1c1917;">Trà Thanh Nhiệt</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="productPrice">Giá bán (VND)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-tag input-icon-lead"></i>
+                        <input type="number" id="productPrice" placeholder="35000" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="input-group">
+                    <label for="productQuantity">Số lượng tồn kho</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-boxes-stacked input-icon-lead"></i>
+                        <input type="number" id="productQuantity" placeholder="100" min="0" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="productImage">File ảnh (trong images/)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-image input-icon-lead"></i>
+                        <input type="text" id="productImage" placeholder="caphesua.jpg, banner.png..." required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="productDescription">Mô tả sản phẩm / Dịch vụ</label>
+                <textarea id="productDescription" rows="3" placeholder="Mô tả chi tiết về hương vị, thành phần hoặc thông tin dịch vụ tiện ích..." style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius-md); padding: 10px 14px; color: #fff; font-size: 0.92rem; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 25px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy bỏ</button>
+                <button type="button" class="btn btn-primary" onclick="saveProduct()">
+                    <i class="fa-solid fa-floppy-disk"></i> Lưu sản phẩm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

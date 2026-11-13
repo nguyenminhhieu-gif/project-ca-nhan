@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Chỗ Co-working - Coffee Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="images/logo.png">
+    <style>
+        /* ================================================================
+           BOOKING PAGE - 2D SEAT MAP STYLES
+           ================================================================ */
+
+        .booking-hero {
+            padding: 45px 6% 25px;
+            text-align: center;
+            background: radial-gradient(circle at 50% 30%, rgba(217,119,6,0.14) 0%, transparent 70%);
+        }
+
+        /* ---- Filter Bar ---- */
+        .booking-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 6%;
+            background: var(--bg-secondary);
+            border-top: 1px solid rgba(217,119,6,0.12);
+            border-bottom: 1px solid rgba(217,119,6,0.12);
+            flex-wrap: wrap;
+        }
+
+        .booking-filter-bar label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .booking-filter-bar .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .booking-filter-bar input[type="date"],
+        .booking-filter-bar select {
+            background: var(--bg-card);
+            border: 1px solid rgba(217,119,6,0.3);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            padding: 8px 14px;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .booking-filter-bar input[type="date"]:focus,
+        .booking-filter-bar select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .booking-filter-bar select option {
+            background: var(--bg-card);
+        }
+
+        .btn-filter-search {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 9px 20px;
+            font-size: 0.9rem;
+            font-family: var(--font-ui);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-filter-search:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-amber);
+        }
+
+        /* ---- Legend ---- */
+        .seat-legend {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 10px 6%;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.available  { background: #10b981; }
+        .legend-dot.selected   { background: #f59e0b; }
+        .legend-dot.occupied   { background: #6b7280; }
+
+        /* ---- Floor Plan Layout ---- */
+        .floorplan-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 24px 6% 32px;
+        }
+
+        @media (max-width: 1100px) {
+            .floorplan-wrapper { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 700px) {
+            .floorplan-wrapper { grid-template-columns: 1fr; }
+        }
+
+        /* ---- Zone Card ---- */
+        .zone-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(217,119,6,0.15);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zone-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .zone-quiet::before   { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .zone-meeting::before { background: linear-gradient(90deg, #0ea5e9, #22d3ee); }
+        .zone-window::before  { background: linear-gradient(90deg, #10b981, #34d399); }
+
+        .zone-header {
+            margin-bottom: 18px;
+        }
+
+        .zone-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .zone-title .zone-icon {
+            margin-right: 7px;
+        }
+
+        .zone-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ---- Seat Grid ---- */
+        .seat-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        /* ---- Seat Button ---- */
+        .seat-btn {
+            position: relative;
+            width: 76px;
+            height: 80px;
+            border-radius: var(--radius-md);
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all var(--transition-bounce);
+            user-select: none;
+        }
+
+        .seat-btn .seat-num {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .seat-btn .seat-cap {
+            font-size: 0.65rem;
+            font-weight: 500;
+            opacity: 0.85;
+        }
+
+        /* Available */
+        .seat-btn.available {
+            background: rgba(16,185,129,0.12);
+            border-color: rgba(16,185,129,0.4);
+            color: #34d399;
+        }
+
+        .seat-btn.available:hover {
+            background: rgba(16,185,129,0.22);
+            border-color: #10b981;
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 6px 18px rgba(16,185,129,0.25);
+        }
+
+        /* Selected */
+        .seat-btn.selected {
+            background: rgba(245,158,11,0.18);
+            border-color: var(--primary);
+            color: var(--accent);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(217,119,6,0.35);
+        }
+
+        /* Occupied */
+        .seat-btn.occupied {
+            background: rgba(107,114,128,0.1);
+            border-color: rgba(107,114,128,0.3);
+            color: #6b7280;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .seat-btn.occupied:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .seat-btn i {
+            font-size: 1.3rem;
+        }
+
+        /* Occupied overlay badge */
+        .seat-btn.occupied::after {
+            content: 'Đã đặt';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            background: rgba(107,114,128,0.4);
+            padding: 1px 5px;
+            border-radius: 20px;
+            color: #9ca3af;
+        }
+
+        /* ---- Floorplan decorations ---- */
+        .zone-amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .amenity-chip {
+            font-size: 0.72rem;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(217,119,6,0.25);
+            color: var(--text-muted);
+            background: rgba(217,119,6,0.07);
+        }
+
+        /* ---- Visual floor map decorations ---- */
+        .floor-map-container {
+            padding: 0 6% 8px;
+        }
+
+        .floor-map-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ---- Booking Summary Sidebar ---- */
+        .booking-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 0 6% 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .booking-layout { grid-template-columns: 1fr; }
+        }
+
+        .floorplan-section { }
+
+        .booking-summary-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(217,119,6,0.2);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            position: sticky;
+            top: 90px;
+            transition: box-shadow var(--transition-normal);
+        }
+
+        .booking-summary-card:hover {
+            box-shadow: var(--shadow-amber);
+        }
+
+        .summary-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-title i { color: var(--primary); }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.88rem;
+        }
+
+        .summary-row:last-of-type { border-bottom: none; }
+
+        .summary-row .label { color: var(--text-muted); }
+        .summary-row .value { color: var(--text-main); font-weight: 600; }
+        .summary-row .value.price { color: var(--accent); font-size: 1.1rem; }
+
+        .no-seat-msg {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .no-seat-msg i { font-size: 2rem; color: var(--primary); display: block; margin-bottom: 8px; }
+
+        /* ---- Booking Form ---- */
+        .booking-form {
+            margin-top: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(217,119,6,0.25);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            padding: 9px 12px;
+            font-family: var(--font-ui);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .form-group select option { background: var(--bg-card); }
+
+        .btn-book-confirm {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            font-family: var(--font-ui);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .btn-book-confirm:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-amber);
+        }
+
+        .btn-book-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ---- Booking History ---- */
+        .booking-history-section {
+            padding: 0 6% 48px;
+        }
+
+        .section-heading {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--text-main);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-heading i { color: var(--primary); }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .history-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(217,119,6,0.12);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        }
+
+        .history-card .hc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .history-card .hc-table {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .history-card .hc-status {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        .status-confirmed  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .status-pending    { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .status-cancelled  { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.3); }
+
+        .history-card .hc-info {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .history-card .hc-info strong { color: var(--text-main); }
+
+        .btn-cancel-booking {
+            margin-top: 10px;
+            font-size: 0.78rem;
+            padding: 5px 12px;
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #f87171;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font-ui);
+            transition: all var(--transition-fast);
+        }
+
+        .btn-cancel-booking:hover {
+            background: rgba(239,68,68,0.22);
+            border-color: #ef4444;
+        }
+
+        /* ---- Success Modal ---- */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.hidden { display: none; }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid rgba(217,119,6,0.3);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            max-width: 460px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.3s var(--transition-bounce);
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 14px; right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .modal-close-btn:hover { color: var(--text-main); }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-ui);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+        /* ---- Loading State ---- */
+        .seat-loading-overlay {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ---- Floormap visual walls ---- */
+        .floorplan-wrapper {
+            position: relative;
+        }
+
+        .zone-card .zone-wall-hint {
+            position: absolute;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(217,119,6,0.3);
+        }
+
+        .zone-window .zone-wall-hint {
+            top: 10px; right: 12px;
+        }
+
+        /* ---- Responsive filter bar ---- */
+        @media (max-width: 600px) {
+            .booking-filter-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .seat-btn {
+                width: 68px;
+                height: 72px;
+            }
+        }
+
+        /* Floorplan visual: coffee table SVG-like indicators */
+        .zone-deco {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .zone-deco-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(217,119,6,0.15);
+        }
+
+        .zone-deco-icon {
+            font-size: 0.75rem;
+            color: rgba(217,119,6,0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo-area">
+            <img src="images/logo.png" alt="Coffee Shop Logo" class="logo">
+            <h2>Coffee Shop</h2>
+        </a>
+
+        <div class="menu">
+            <a href="index.html" class="nav-link">
+                <i class="fa-solid fa-house"></i>
+                <span>Trang chủ</span>
+            </a>
+
+            <a href="products.html" class="nav-link">
+                <i class="fa-solid fa-mug-hot"></i>
+                <span>Thực đơn</span>
+            </a>
+
+            <a href="custom-blend.html" class="nav-link">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Custom Blend</span>
+            </a>
+
+            <a href="booking.html" class="nav-link active">
+                <i class="fa-solid fa-chair"></i>
+                <span>Đặt chỗ Co-working</span>
+            </a>
+
+            <a href="orders.html" class="nav-link">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Lịch sử đơn</span>
+            </a>
+
+            <a href="cart.html" class="nav-link cart-badge-wrap">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Giỏ hàng</span>
+                <span id="cartBadgeCount" class="badge-count" style="display:none;">0</span>
+            </a>
+
+            <a href="admin.html" id="admin-nav-link" class="nav-link" style="display:none;">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Quản trị</span>
+            </a>
+
+            <span id="welcomeUser"></span>
+
+            <li id="auth-menu" style="list-style:none;">
+                <a href="login.html" id="auth-link" class="nav-link btn-nav-auth">
+                    <i class="fa fa-user"></i>
+                    <span id="auth-text">Đăng nhập</span>
+                </a>
+            </li>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="booking-hero">
+        <span class="section-tag"><i class="fa-solid fa-chair"></i> Không gian làm việc cao cấp</span>
+        <h1 class="section-title">Đặt Chỗ Co-working</h1>
+        <p class="section-desc">Chọn bàn lý tưởng cho buổi làm việc, họp nhóm hoặc thư giãn trong không gian cà phê sang trọng.</p>
+    </section>
+
+    <!-- FILTER BAR -->
+    <div class="booking-filter-bar">
+        <div class="filter-group">
+            <i class="fa-regular fa-calendar" style="color: var(--primary);"></i>
+            <label for="filterDate">Ngày:</label>
+            <input type="date" id="filterDate">
+        </div>
+
+        <div class="filter-group">
+            <i class="fa-regular fa-clock" style="color: var(--primary);"></i>
+            <label for="filterSlot">Khung giờ:</label>
+            <select id="filterSlot">
+                <option value="08:00 - 12:00">08:00 - 12:00 (Buổi sáng)</option>
+                <option value="13:00 - 17:00">13:00 - 17:00 (Buổi chiều)</option>
+                <option value="18:00 - 22:00">18:00 - 22:00 (Buổi tối)</option>
+            </select>
+        </div>
+
+        <button class="btn-filter-search" onclick="loadOccupied()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Kiểm tra bàn trống
+        </button>
+
+        <div class="seat-legend" style="margin-left: auto; padding: 0;">
+            <div class="legend-item">
+                <div class="legend-dot available"></div>
+                <span>Còn trống</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot selected"></div>
+                <span>Đang chọn</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot occupied"></div>
+                <span>Đã đặt</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN BOOKING LAYOUT -->
+    <div class="booking-layout">
+
+        <!-- FLOOR PLAN -->
+        <div class="floorplan-section">
+            <div class="floor-map-label">
+                <i class="fa-solid fa-map-location-dot" style="color: var(--primary);"></i>
+                Sơ đồ tầng — Coffee Shop Co-working Space
+            </div>
+
+            <div id="floorplanWrapper" class="floorplan-wrapper">
+
+                <!-- ZONE 1: Khu Yên Tĩnh -->
+                <div class="zone-card zone-quiet">
+                    <div class="zone-header">
+                        <div class="zone-title">
+                            <span class="zone-icon">🤫</span>
+                            Khu Yên Tĩnh
+                        </div>
+                        <div class="zone-subtitle">Quiet Zone — Tập trung làm việc, không ồn ào</div>
+                    </div>
+
+                    <div class="zone-deco">
+                        <div class="zone-deco-line"></div>
+                        <span class="zone-deco-icon"><i class="fa-solid fa-plug-circle-bolt"></i></span>
+                        <div class="zone-deco-line"></div>
+                    </div>
+
+                    <div class="seat-grid" id="zone-quiet">
+                        <!-- T01–T06 generated by JS -->
+                    </div>
+
+                    <div class="zone-amenities">
+                        <span class="amenity-chip"><i class="fa-solid fa-plug"></i> Ổ cắm riêng</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-lightbulb"></i> Đèn bàn</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-wifi"></i> WiFi nhanh</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-user-group"></i> 1–2 người</span>
+                    </div>
+                </div>
+
+                <!-- ZONE 2: Khu Họp Nhóm -->
+                <div class="zone-card zone-meeting">
+                    <div class="zone-header">
+                        <div class="zone-title">
+                            <span class="zone-icon">📋</span>
+                            Khu Họp Nhóm
+                        </div>
+                        <div class="zone-subtitle">Meeting Zone — Lý tưởng cho nhóm &amp; workshop</div>
+                    </div>
+
+                    <div class="zone-deco">
+                        <div class="zone-deco-line"></div>
+                        <span class="zone-deco-icon"><i class="fa-solid fa-chalkboard"></i></span>
+                        <div class="zone-deco-line"></div>
+                    </div>
+
+                    <div class="seat-grid" id="zone-meeting">
+                        <!-- M01–M03 generated by JS -->
+                    </div>
+
+                    <div class="zone-amenities">
+                        <span class="amenity-chip"><i class="fa-solid fa-chalkboard"></i> Bảng trắng</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-display"></i> Màn hình chiếu</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-users"></i> 4–8 người</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-plug"></i> Multi-outlet</span>
+                    </div>
+                </div>
+
+                <!-- ZONE 3: Khu Cửa Sổ -->
+                <div class="zone-card zone-window">
+                    <span class="zone-wall-hint"><i class="fa-solid fa-sun"></i> View cửa sổ</span>
+                    <div class="zone-header">
+                        <div class="zone-title">
+                            <span class="zone-icon">🪟</span>
+                            Khu Cửa Sổ
+                        </div>
+                        <div class="zone-subtitle">Window Chill Zone — View thoáng mát, cây xanh</div>
+                    </div>
+
+                    <div class="zone-deco">
+                        <div class="zone-deco-line"></div>
+                        <span class="zone-deco-icon"><i class="fa-solid fa-leaf"></i></span>
+                        <div class="zone-deco-line"></div>
+                    </div>
+
+                    <div class="seat-grid" id="zone-window">
+                        <!-- W01–W04 generated by JS -->
+                    </div>
+
+                    <div class="zone-amenities">
+                        <span class="amenity-chip"><i class="fa-solid fa-panorama"></i> View thoáng</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-seedling"></i> Cây xanh</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-sun"></i> Ánh sáng tự nhiên</span>
+                        <span class="amenity-chip"><i class="fa-solid fa-user-group"></i> 2–4 người</span>
+                    </div>
+                </div>
+
+            </div><!-- /floorplan-wrapper -->
+        </div><!-- /floorplan-section -->
+
+        <!-- BOOKING SUMMARY SIDEBAR -->
+        <aside>
+            <div class="booking-summary-card">
+                <div class="summary-title">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Tóm tắt đặt chỗ
+                </div>
+
+                <!-- No seat selected state -->
+                <div id="summaryEmpty" class="no-seat-msg">
+                    <i class="fa-solid fa-hand-pointer"></i>
+                    Chọn một bàn trên sơ đồ để bắt đầu đặt chỗ
+                </div>
+
+                <!-- Seat info -->
+                <div id="summaryContent" style="display:none;">
+                    <div class="summary-row">
+                        <span class="label">Bàn</span>
+                        <span class="value" id="sumTable">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Khu vực</span>
+                        <span class="value" id="sumZone">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Ngày</span>
+                        <span class="value" id="sumDate">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Khung giờ</span>
+                        <span class="value" id="sumSlot">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Giá</span>
+                        <span class="value price" id="sumPrice">—</span>
+                    </div>
+
+                    <!-- Booking form -->
+                    <div class="booking-form">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-user"></i> Họ &amp; tên *</label>
+                            <input type="text" id="bookingName" placeholder="Nguyễn Văn A" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-phone"></i> Số điện thoại *</label>
+                            <input type="tel" id="bookingPhone" placeholder="0901 234 567" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-mug-hot"></i> Thức uống kèm (tùy chọn)</label>
+                            <select id="bookingDrink">
+                                <option value="">— Không chọn —</option>
+                                <option value="Cà Phê Đen">Cà Phê Đen (+30,000đ)</option>
+                                <option value="Cà Phê Sữa">Cà Phê Sữa (+35,000đ)</option>
+                                <option value="Bạc Xỉu">Bạc Xỉu (+35,000đ)</option>
+                                <option value="Cold Brew">Cold Brew (+45,000đ)</option>
+                                <option value="Trà Đào">Trà Đào (+40,000đ)</option>
+                                <option value="Nước ép">Nước ép trái cây (+40,000đ)</option>
+                                <option value="Combo 2 cà phê">Combo 2 cà phê (+60,000đ)</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-book-confirm" id="btnConfirmBook" onclick="submitBooking()">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Xác Nhận Đặt Chỗ
+                        </button>
+                    </div>
+                </div><!-- /summaryContent -->
+            </div>
+        </aside>
+    </div><!-- /booking-layout -->
+
+    <!-- BOOKING HISTORY -->
+    <section class="booking-history-section" id="historySection" style="display:none;">
+        <h2 class="section-heading">
+            <i class="fa-solid fa-history"></i>
+            Lịch Sử Đặt Chỗ Của Bạn
+        </h2>
+        <div id="bookingHistoryGrid" class="history-grid">
+            <!-- filled by JS -->
+        </div>
+    </section>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal hidden" id="successModal">
+        <div class="modal-content" style="text-align: center;">
+            <button class="modal-close-btn" onclick="closeSuccessModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.15); border: 2px solid #10b981; color: #10b981; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <h3 style="color: #fff; font-size: 1.3rem; margin-bottom: 8px;">Đặt Chỗ Thành Công!</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px;" id="successTableText"></p>
+            <p style="color: var(--text-muted); font-size: 0.88rem;" id="successSlotText"></p>
+            <div class="modal-actions" style="justify-content: center; gap: 12px; margin-top: 24px;">
+                <button class="btn-secondary" style="max-width: 160px;" onclick="closeSuccessModal()">
+                    <i class="fa-solid fa-chair"></i> Đặt thêm
+                </button>
+                <button class="btn-book-confirm" style="max-width: 180px; margin: 0;" onclick="window.location.href='orders.html'">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Xem lịch sử
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANCEL BOOKING CONFIRMATION MODAL -->
+    <div class="modal hidden" id="cancelBookModal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <button class="modal-close-btn" onclick="document.getElementById('cancelBookModal').classList.add('hidden')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(239,68,68,0.15); border: 2px solid #ef4444; color: #ef4444; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 style="color: #fff; margin-bottom: 8px;">Hủy đặt chỗ?</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 4px;" id="cancelBookText">Bạn có chắc muốn hủy lượt đặt này không?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('cancelBookModal').classList.add('hidden')">Giữ lại</button>
+                <button class="btn-book-confirm" style="margin:0; background: linear-gradient(135deg,#ef4444,#b91c1c);" id="btnExecCancelBook" onclick="executeCancelBooking()">
+                    <i class="fa-solid fa-ban"></i> Xác nhận hủy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-area" style="margin-bottom: 12px;">
+                    <img src="images/logo.png" class="logo" alt="Coffee Shop Logo">
+                    <h2>Coffee Shop</h2>
+                </div>
+                <p>Thưởng thức không gian ấm cúng và những tách cà phê thượng hạng được chế tác dành riêng cho bạn.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Dịch Vụ</h4>
+                <ul>
+                    <li><a href="booking.html">Đặt chỗ Co-working</a></li>
+                    <li><a href="products.html">Thực đơn</a></li>
+                    <li><a href="custom-blend.html">Custom Brew Studio</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Thông Tin</h4>
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="orders.html">Lịch sử đơn</a></li>
+                    <li><a href="cart.html">Giỏ hàng</a></li>
+                    <li><a href="login.html">Tài khoản</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Giờ Mở Cửa</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 8px;"><i class="fa-regular fa-clock" style="color: var(--primary);"></i> Thứ 2 - Chủ Nhật: 07:00 - 22:30</p>
+                <p style="font-size: 0.9rem; margin-bottom: 8px;"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> 123 Đường Cà Phê, Quận 1, TP. HCM</p>
+                <p style="font-size: 0.9rem;"><i class="fa-solid fa-phone" style="color: var(--primary);"></i> Hotline: 1900 6868</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Coffee Shop. All Rights Reserved. Crafted with Passion ☕</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/app.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+
+</html>

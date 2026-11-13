@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Brew Studio - Phối Vị Cà Phê Cá Nhân Hóa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="images/logo.png">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo-area">
+            <img src="images/logo.png" alt="Coffee Shop Logo" class="logo">
+            <h2>Coffee Shop</h2>
+        </a>
+
+        <div class="menu">
+            <a href="index.html" class="nav-link">
+                <i class="fa-solid fa-house"></i>
+                <span>Trang chủ</span>
+            </a>
+
+            <a href="products.html" class="nav-link">
+                <i class="fa-solid fa-mug-hot"></i>
+                <span>Thực đơn</span>
+            </a>
+
+            <a href="custom-blend.html" class="nav-link active">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Custom Blend</span>
+            </a>
+
+            <a href="orders.html" class="nav-link">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Lịch sử đơn</span>
+            </a>
+
+            <a href="cart.html" class="nav-link cart-badge-wrap">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Giỏ hàng</span>
+                <span id="cartBadgeCount" class="badge-count" style="display:none;">0</span>
+            </a>
+
+            <a href="admin.html" id="admin-nav-link" class="nav-link" style="display:none;">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Quản trị</span>
+            </a>
+
+            <span id="welcomeUser"></span>
+
+            <li id="auth-menu" style="list-style:none;">
+                <a href="login.html" id="auth-link" class="nav-link btn-nav-auth">
+                    <i class="fa fa-user"></i>
+                    <span id="auth-text">Đăng nhập</span>
+                </a>
+            </li>
+        </div>
+    </nav>
+
+    <!-- HEADER / BANNER -->
+    <section style="padding: 45px 6% 25px; text-align: center; background: radial-gradient(circle at 50% 30%, rgba(217,119,6,0.15) 0%, transparent 70%);">
+        <span class="section-tag"><i class="fa-solid fa-flask-vial"></i> Interactive Artisan Barista</span>
+        <h1 class="section-title">Custom Brew Studio</h1>
+        <p class="section-desc">Tự tay phối vị cà phê độc bản: tinh chỉnh tỷ lệ hạt, phương pháp chiết xuất, sữa và độ ngọt chuẩn gu của bạn.</p>
+    </section>
+
+    <!-- STUDIO MAIN WORKSPACE -->
+    <main class="studio-page-wrapper">
+        <div class="studio-grid">
+            <!-- LEFT COLUMN: CONTROLS & SELECTIONS -->
+            <div class="studio-controls">
+
+                <!-- STEP 1: BEAN RATIO -->
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fa-solid fa-seedling"></i>
+                        <span>1. Phối Tỷ Lệ Hạt Cà Phê Đặc Sản</span>
+                    </h3>
+
+                    <!-- ROBUSTA SLIDER -->
+                    <div class="bean-slider-box">
+                        <div class="bean-slider-header">
+                            <div class="bean-name-wrap">
+                                <span class="bean-tag robusta">Robusta</span>
+                                <div>
+                                    <strong style="color: #ffffff; font-size: 0.95rem;">Robusta Honey Đắk Lắk</strong>
+                                    <div style="font-size: 0.76rem; color: var(--text-muted);">Vị đắng đầm, sánh đậm, hàm lượng caffeine cao</div>
+                                </div>
+                            </div>
+                            <span class="bean-percent" id="robustaPercentLabel">70%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="70" class="slider-input" id="robustaSlider" oninput="onRobustaChange(this.value)">
+                    </div>
+
+                    <!-- ARABICA SLIDER -->
+                    <div class="bean-slider-box">
+                        <div class="bean-slider-header">
+                            <div class="bean-name-wrap">
+                                <span class="bean-tag arabica">Arabica</span>
+                                <div>
+                                    <strong style="color: #ffffff; font-size: 0.95rem;">Arabica Cầu Đất Đà Lạt</strong>
+                                    <div style="font-size: 0.76rem; color: var(--text-muted);">Hương thơm hoa quả, vị chua thanh thoát, hậu vị ngọt sâu</div>
+                                </div>
+                            </div>
+                            <span class="bean-percent" id="arabicaPercentLabel">30%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="30" class="slider-input" id="arabicaSlider" oninput="onArabicaChange(this.value)">
+                    </div>
+
+                    <!-- PRESET RATIOS -->
+                    <div style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="pill-option" onclick="setBeanPreset(80, 20)">
+                            <i class="fa-solid fa-fire"></i> Gu Đậm (80/20)
+                        </button>
+                        <button class="pill-option selected" id="presetGolden" onclick="setBeanPreset(50, 50)">
+                            <i class="fa-solid fa-scale-balanced"></i> Cân Bằng (50/50)
+                        </button>
+                        <button class="pill-option" onclick="setBeanPreset(30, 70)">
+                            <i class="fa-solid fa-feather"></i> Thanh Nhẹ (30/70)
+                        </button>
+                        <button class="pill-option" onclick="setBeanPreset(0, 100)">
+                            <i class="fa-solid fa-gem"></i> 100% Arabica
+                        </button>
+                    </div>
+
+                    <!-- LIVE TASTE PROFILE RADAR / METERS -->
+                    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.08);">
+                        <h4 style="font-size: 0.92rem; color: #fbbf24; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-chart-simple"></i> Biểu Đồ Hương Vị Dự Kiến:
+                        </h4>
+                        <div class="taste-meters-grid">
+                            <div class="taste-meter-item">
+                                <span class="taste-meter-label">Độ Đậm (Body)</span>
+                                <div class="taste-meter-bar-track">
+                                    <div class="taste-meter-bar-fill" id="meterBody" style="width: 80%;"></div>
+                                </div>
+                                <span class="taste-meter-val" id="valBody">8/10</span>
+                            </div>
+                            <div class="taste-meter-item">
+                                <span class="taste-meter-label">Vị Đắng (Bitter)</span>
+                                <div class="taste-meter-bar-track">
+                                    <div class="taste-meter-bar-fill" id="meterBitter" style="width: 75%;"></div>
+                                </div>
+                                <span class="taste-meter-val" id="valBitter">7.5/10</span>
+                            </div>
+                            <div class="taste-meter-item">
+                                <span class="taste-meter-label">Hương Thơm (Aroma)</span>
+                                <div class="taste-meter-bar-track">
+                                    <div class="taste-meter-bar-fill" id="meterAroma" style="width: 60%;"></div>
+                                </div>
+                                <span class="taste-meter-val" id="valAroma">6/10</span>
+                            </div>
+                            <div class="taste-meter-item">
+                                <span class="taste-meter-label">Chua Thanh (Acidity)</span>
+                                <div class="taste-meter-bar-track">
+                                    <div class="taste-meter-bar-fill" id="meterAcidity" style="width: 40%;"></div>
+                                </div>
+                                <span class="taste-meter-val" id="valAcidity">4/10</span>
+                            </div>
+                            <div class="taste-meter-item">
+                                <span class="taste-meter-label">Caffeine</span>
+                                <div class="taste-meter-bar-track">
+                                    <div class="taste-meter-bar-fill" id="meterCaffeine" style="width: 85%;"></div>
+                                </div>
+                                <span class="taste-meter-val" id="valCaffeine">Cao</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: BREWING METHOD -->
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fa-solid fa-mug-saucer"></i>
+                        <span>2. Chọn Phương Pháp Chiết Xuất</span>
+                    </h3>
+                    <div class="choice-cards-grid" id="brewMethodGrid">
+                        <!-- PHIN -->
+                        <div class="choice-card selected" onclick="selectBrewMethod('phin', 'Phin Truyền Thống', 0, this)">
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                            <div>
+                                <i class="fa-solid fa-filter choice-card-icon"></i>
+                                <div class="choice-card-title">Phin Truyền Thống</div>
+                                <div class="choice-card-desc">Chiết xuất nhỏ giọt chậm rãi, tạo độ sánh đậm đà chuẩn gu Việt.</div>
+                            </div>
+                            <div class="choice-card-price">Chuẩn vị (+0 VND)</div>
+                        </div>
+
+                        <!-- COLD BREW -->
+                        <div class="choice-card" onclick="selectBrewMethod('coldbrew', 'Cold Brew Ủ Lạnh 24H', 10000, this)">
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                            <div>
+                                <i class="fa-solid fa-snowflake choice-card-icon"></i>
+                                <div class="choice-card-title">Cold Brew Ủ Lạnh</div>
+                                <div class="choice-card-desc">Ủ lạnh suốt 24 giờ cho chất vị mượt mà, thanh mát và dịu êm dạ dày.</div>
+                            </div>
+                            <div class="choice-card-price">+10.000 VND</div>
+                        </div>
+
+                        <!-- ESPRESSO -->
+                        <div class="choice-card" onclick="selectBrewMethod('espresso', 'Espresso Chuẩn Ý', 8000, this)">
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                            <div>
+                                <i class="fa-solid fa-bolt choice-card-icon"></i>
+                                <div class="choice-card-title">Espresso Chuẩn Ý</div>
+                                <div class="choice-card-desc">Áp suất 9-bar nén chiết xuất lớp Crema vàng óng, hương vị bùng nổ.</div>
+                            </div>
+                            <div class="choice-card-price">+8.000 VND</div>
+                        </div>
+
+                        <!-- POUR OVER -->
+                        <div class="choice-card" onclick="selectBrewMethod('pourover', 'Pour-over V60', 12000, this)">
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                            <div>
+                                <i class="fa-solid fa-wind choice-card-icon"></i>
+                                <div class="choice-card-title">Pour-over V60</div>
+                                <div class="choice-card-desc">Lọc giấy thủ công phô diễn trọn vẹn tầng hương hoa quả tinh khiết.</div>
+                            </div>
+                            <div class="choice-card-price">+12.000 VND</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: MILK & SWEETNESS -->
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>3. Chọn Sữa & Độ Ngọt Chuẩn Khẩu Vị</span>
+                    </h3>
+
+                    <!-- MILK OPTIONS -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: 0.92rem; color: #ffffff; margin-bottom: 10px;">Lựa chọn dòng sữa:</h4>
+                        <div class="choice-cards-grid" id="milkGrid">
+                            <!-- NO MILK -->
+                            <div class="choice-card" onclick="selectMilk('none', 'Cà phê đen nguyên bản', 0, this)">
+                                <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                                <div>
+                                    <i class="fa-solid fa-ban choice-card-icon"></i>
+                                    <div class="choice-card-title">Đen Nguyên Bản</div>
+                                    <div class="choice-card-desc">Không pha sữa, giữ trọn vẹn tinh túy của hạt rang mộc.</div>
+                                </div>
+                                <div class="choice-card-price">+0 VND</div>
+                            </div>
+
+                            <!-- CONDENSED MILK -->
+                            <div class="choice-card selected" onclick="selectMilk('condensed', 'Sữa đặc truyền thống', 5000, this)">
+                                <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                                <div>
+                                    <i class="fa-solid fa-cow choice-card-icon"></i>
+                                    <div class="choice-card-title">Sữa Đặc Ông Thọ</div>
+                                    <div class="choice-card-desc">Béo ngậy ngọt ngào, tạo nên ly cà phê sữa đá kinh điển.</div>
+                                </div>
+                                <div class="choice-card-price">+5.000 VND</div>
+                            </div>
+
+                            <!-- FRESH MILK -->
+                            <div class="choice-card" onclick="selectMilk('fresh', 'Sữa tươi thanh trùng Dalat Milk', 7000, this)">
+                                <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                                <div>
+                                    <i class="fa-solid fa-glass-water choice-card-icon"></i>
+                                    <div class="choice-card-title">Sữa Tươi Thanh Trùng</div>
+                                    <div class="choice-card-desc">Béo nhẹ thanh thoát, hòa quyện tạo bọt sữa mịn mượt như Latte.</div>
+                                </div>
+                                <div class="choice-card-price">+7.000 VND</div>
+                            </div>
+
+                            <!-- OAT MILK -->
+                            <div class="choice-card" onclick="selectMilk('oat', 'Sữa yến mạch Oat Milk', 12000, this)">
+                                <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                                <div>
+                                    <i class="fa-solid fa-wheat-awn choice-card-icon"></i>
+                                    <div class="choice-card-title">Sữa Yến Mạch Oat Milk</div>
+                                    <div class="choice-card-desc">Thuần chay, vị thơm bùi ngũ cốc tự nhiên, nhẹ bụng và tốt cho sức khỏe.</div>
+                                </div>
+                                <div class="choice-card-price">+12.000 VND</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SWEETNESS LEVEL -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: 0.92rem; color: #ffffff; margin-bottom: 10px;">Mức độ ngọt:</h4>
+                        <div class="pills-group" id="sweetnessGroup">
+                            <button class="pill-option" onclick="selectSweetness('0%', 'Không đường', this)">0% Không đường</button>
+                            <button class="pill-option" onclick="selectSweetness('30%', 'Ít đường (30%)', this)">30% Ít ngọt</button>
+                            <button class="pill-option selected" onclick="selectSweetness('70%', 'Vừa ngọt (70%)', this)">70% Chuẩn vị</button>
+                            <button class="pill-option" onclick="selectSweetness('100%', 'Ngọt đậm (100%)', this)">100% Đậm ngọt</button>
+                        </div>
+                    </div>
+
+                    <!-- TEMPERATURE / ICE -->
+                    <div>
+                        <h4 style="font-size: 0.92rem; color: #ffffff; margin-bottom: 10px;">Nhiệt độ thưởng thức:</h4>
+                        <div class="pills-group" id="tempGroup">
+                            <button class="pill-option selected" onclick="selectTemp('iced', 'Đá mát lạnh', this)">
+                                <i class="fa-solid fa-cube"></i> Thêm đá mát lạnh
+                            </button>
+                            <button class="pill-option" onclick="selectTemp('hot', 'Uống nóng thơm nồng', this)">
+                                <i class="fa-solid fa-mug-hot"></i> Thưởng thức nóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: STICKY LIVE SIMULATION & ADD TO CART -->
+            <div class="studio-sidebar">
+                <div class="custom-brew-preview-card">
+                    <span class="section-tag" style="margin-bottom: 14px;"><i class="fa-solid fa-sparkles"></i> Barista Preview</span>
+
+                    <!-- VISUAL CUP SIMULATION -->
+                    <div class="cup-visual-container">
+                        <div class="cup-body">
+                            <div class="cup-layer-foam" id="cupFoam"></div>
+                            <div class="cup-layer-coffee" id="cupCoffee"></div>
+                            <div class="cup-layer-milk" id="cupMilk"></div>
+                            <!-- ICE CUBES -->
+                            <div class="cup-ice-cube cup-ice-1" id="ice1"></div>
+                            <div class="cup-ice-cube cup-ice-2" id="ice2"></div>
+                            <div class="cup-ice-cube cup-ice-3" id="ice3"></div>
+                        </div>
+                        <div class="cup-base"></div>
+                    </div>
+
+                    <h3 class="preview-blend-title" id="blendTitle">Custom Blend #Artisan</h3>
+                    <p class="preview-blend-recipe" id="blendRecipeSummary">
+                        70% Robusta Honey + 30% Arabica Cầu Đất<br>
+                        Phin Truyền Thống, Sữa Đặc, 70% Ngọt, Đá
+                    </p>
+
+                    <!-- PRICE BREAKDOWN -->
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Giá hạt cốt (Base):</span>
+                            <span id="priceBase">29.000 VND</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Phụ thu Arabica Cầu Đất:</span>
+                            <span id="priceArabicaBonus">+3.000 VND</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Chiết xuất (<span id="summaryBrewName">Phin</span>):</span>
+                            <span id="priceBrewMethod">+0 VND</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Sữa (<span id="summaryMilkName">Sữa đặc</span>):</span>
+                            <span id="priceMilk">+5.000 VND</span>
+                        </div>
+                        <div class="price-row total-row">
+                            <span>Đơn giá ly:</span>
+                            <span id="unitPriceDisplay">37.000 VND</span>
+                        </div>
+                    </div>
+
+                    <!-- QUANTITY SELECTOR -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 20px;">
+                        <span style="font-size: 0.88rem; color: var(--text-muted);">Số lượng:</span>
+                        <div class="qty-stepper" style="margin: 0;">
+                            <button onclick="changeStudioQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                            <input type="number" id="studioQty" value="1" readonly style="width: 44px; text-align: center;">
+                            <button onclick="changeStudioQty(1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- ADD TO CART BUTTON -->
+                    <button class="btn btn-primary btn-add-studio-cart" id="btnAddToCartStudio" onclick="addCustomBlendToCart()">
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <span>Thêm Vào Giỏ Hàng</span>
+                    </button>
+
+                    <div style="margin-top: 14px; font-size: 0.8rem; color: #fbbf24;">
+                        <i class="fa-solid fa-coins"></i> Tích lũy <strong id="previewPoints">3</strong> Bean Point khi hoàn thành
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-area" style="margin-bottom: 12px;">
+                    <img src="images/logo.png" class="logo" alt="Coffee Shop Logo">
+                    <h2>Coffee Shop</h2>
+                </div>
+                <p>Thưởng thức không gian ấm cúng và những tách cà phê thượng hạng được chế tác dành riêng cho bạn.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Thực Đơn</h4>
+                <ul>
+                    <li><a href="products.html">Cà phê truyền thống</a></li>
+                    <li><a href="products.html">Espresso & Latte</a></li>
+                    <li><a href="custom-blend.html">Custom Brew Studio</a></li>
+                    <li><a href="products.html">Trà hoa quả & Đá xay</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Thông Tin</h4>
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="orders.html">Lịch sử đơn</a></li>
+                    <li><a href="cart.html">Giỏ hàng</a></li>
+                    <li><a href="login.html">Tài khoản</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Giờ Mở Cửa</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 8px;"><i class="fa-regular fa-clock" style="color: var(--primary);"></i> Thứ 2 - Chủ Nhật: 07:00 - 22:30</p>
+                <p style="font-size: 0.9rem; margin-bottom: 8px;"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> 123 Đường Cà Phê, Quận 1, TP. HCM</p>
+                <p style="font-size: 0.9rem;"><i class="fa-solid fa-phone" style="color: var(--primary);"></i> Hotline: 1900 6868</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Coffee Shop. All Rights Reserved. Crafted with Passion ☕</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="js/app.js"></script>
+    <script src="js/custom-blend.js"></script>
+</body>
+
+</html>
